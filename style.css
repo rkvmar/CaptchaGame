@@ -31,7 +31,7 @@
 }
 #grid{
     display:grid;
-  justify-content: center;
+  
   align-items: center;
   width: 400px;
   height: 600px;
@@ -53,6 +53,11 @@
     line-height: 100px;
     justify-content: center;
     text-align: center;
+    background-size: cover;
+    transition-duration: 0.25s;
+}
+.grid-item:hover{
+    opacity: 80%;
 }
 #grid-header{
     text-align: center;
