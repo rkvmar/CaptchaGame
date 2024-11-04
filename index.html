@@ -11,21 +11,33 @@
 <body>
     <div id="outerbox">
         <div id="checkbox"></div>
-        <p id="text">I am not a robot</p>
-       
+        <div id="text">I'm not a robot</div>
     </div>
+    
+    <button id="play-again" onclick="resetGame()" style="display: none;">Play Again</button>
+    
     <div id="grid">
-        <div id="grid-header">Select all images containing: <br><span class="big" id="topic"> cow </span><br> if there are none, click skip</div>
-        <div class="grid-item" id="image1"></div>
-        <div class="grid-item" id="image2"></div>
-        <div class="grid-item" id="image3"></div>
-        <div class="grid-item" id="image4"></div>
-        <div class="grid-item" id="image5"></div>
-        <div class="grid-item" id="image6"></div>
-        <div class="grid-item" id="image7"></div>
-        <div class="grid-item" id="image8"></div>
-        <div class="grid-item" id="image9"></div>
-        <div id="grid-footer"><button>Skip</button></div>
+        <div id="grid-header">
+            <p class="big">Select all images with</p>
+            <p id="target-object">cars</p>
+        </div>
+        <div id="grid-items-container">
+            <div class="grid-item" data-index="0"></div>
+            <div class="grid-item" data-index="1"></div>
+            <div class="grid-item" data-index="2"></div>
+            <div class="grid-item" data-index="3"></div>
+            <div class="grid-item" data-index="4"></div>
+            <div class="grid-item" data-index="5"></div>
+            <div class="grid-item" data-index="6"></div>
+            <div class="grid-item" data-index="7"></div>
+            <div class="grid-item" data-index="8"></div>
+        </div>
+        <div id="grid-footer">
+            <div id="lives">Lives: <span id="lives-count">3</span></div>
+            <div id="buttons">
+                <button onclick="verify()">VERIFY</button>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

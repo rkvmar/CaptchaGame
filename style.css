@@ -1,98 +1,237 @@
-#outerbox{
+body {
     display: flex;
-  align-items: center;
-  height: 100px;
-  border: 3px solid rgb(148, 148, 148);
-  background-color: whitesmoke;
-  justify-content: center;
-  margin-left: 30%;
-  margin-right: 30%;
-  font: 1.2rem "Fira Sans", sans-serif;
-}
-
-#text{
-    line-height: 50px;
-}
-
-#checkbox{
-    width: 50px;
-    height: 50px;
-    border-color: rgb(79, 79, 79);
-    border-width: 5px;
-    border-style: solid;
-    background-color: white;
-    margin: 50px;
-    transition-duration: 0.25s;
-    border-radius: 10px;
-}
-#checkbox:hover{
-    background-color: rgb(118, 118, 118);
-    border-radius: 30px;
-}
-#grid{
-    display:grid;
-  
-  align-items: center;
-  width: 400px;
-  height: 600px;
-  border: 3px solid rgb(148, 148, 148);
-  background-color: whitesmoke;
-  margin: auto;
-  font: 1.2rem "Fira Sans", sans-serif;
-  grid-template-columns: auto auto auto;
-  grid-template-rows: 100px auto auto auto 100px;
-  justify-content: space-evenly;
-  align-content: space-evenly;
-  font: 1.2rem "Fira Sans", sans-serif;
-  opacity: 0;
-}
-.grid-item{
-    background-color: white;
-    height: 100px;
-    width: 100px;
-    line-height: 100px;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    text-align: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    gap: 10px;
+}
+
+#outerbox {
+    display: flex;
+    align-items: center;
+    padding: clamp(10px, 3vw, 15px);
+    border: 1px solid #dadce0;
+    border-radius: 3px;
+    max-width: 90vw;
+    box-sizing: border-box;
+}
+
+#outerbox.failed {
+    cursor: default;
+}
+
+#checkbox {
+    width: clamp(20px, 5vw, 24px);
+    height: clamp(20px, 5vw, 24px);
+    border: 2px solid #c1c1c1;
+    border-radius: 2px;
+    margin-right: clamp(8px, 2vw, 12px);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+#checkbox.failed {
+    cursor: default;
+}
+
+#text {
+    color: #222;
+    font-size: clamp(12px, 3vw, 14px);
+    white-space: nowrap;
+}
+
+#grid {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(400px, 90vw);
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    visibility: hidden;
+    z-index: 1000;
+}
+
+#grid-header {
+    padding: 16px 12px;
+    border-bottom: 1px solid #dadce0;
+}
+
+.big {
+    margin: 0;
+    font-size: clamp(14px, 3vw, 16px);
+    color: #222;
+}
+
+#target-object {
+    margin: 8px 0 0;
+    font-size: clamp(20px, 5vw, 28px);
+    font-weight: bold;
+    color: #222;
+}
+
+#grid-items-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 2px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+}
+
+.grid-item {
+    width: 100%;
+    padding-bottom: 100%;
+    border: 1px solid #dadce0;
+    box-sizing: border-box;
+    cursor: pointer;
     background-size: cover;
-    transition-duration: 0.25s;
+    background-position: center;
+    position: relative;
+    transition: border 0.2s ease;
 }
-.grid-item:hover{
-    opacity: 80%;
+
+.grid-item.selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 4px solid #4285f4;
+    animation: borderPulseIn 0.3s ease-out;
 }
-#grid-header{
-    text-align: center;
-    color: white;
-    background-color: cornflowerblue;
-    grid-column: 1 / 4;
-    justify-content: center;
-    height: 100px;
-    line-height: 25px;
+
+@keyframes borderPulseIn {
+    0% {
+        transform: scale(1.1);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
-#grid-footer{
-    text-align: center;
-    color: white;
-    background-color: rgb(148, 148, 148);;
-    grid-column: 1 / 4;
-    justify-content: center;
-    height: 100px;
-    line-height: 100px;
+
+@keyframes borderPulseOut {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.1);
+        opacity: 0;
+    }
 }
-.big{
-    font-size: 40px;
-    line-height: 45px;
+
+.grid-item.removing-selection::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 4px solid #4285f4;
+    animation: borderPulseOut 0.3s ease-out forwards;
 }
+
+#grid-footer {
+    clear: both;
+    padding: 12px;
+    text-align: right;
+    border-top: 1px solid #dadce0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#lives {
+    color: #222;
+    font-size: clamp(12px, 3vw, 14px);
+}
+
+#lives-count {
+    color: #4285f4;
+    font-weight: bold;
+}
+
 button {
-    background-color: #6495ed;
-    border: none;
+    background: #4285f4;
     color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    border-radius: 10px;
-    transition-duration: 0.25s;
-  }
-button:hover{
-    background-color: #557ec9;
+    border: none;
+    padding: clamp(8px, 2vw, 10px) clamp(16px, 4vw, 20px);
+    border-radius: 4px;
+    font-size: clamp(12px, 3vw, 14px);
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3367d6;
+}
+
+@keyframes redFlash {
+    0% {
+        background-color: rgba(255, 0, 0, 0);
+    }
+    50% {
+        background-color: rgba(255, 0, 0, 0.3);
+    }
+    100% {
+        background-color: rgba(255, 0, 0, 0);
+    }
+}
+
+.flash-red {
+    animation: redFlash 0.5s ease-out;
+}
+
+#buttons {
+    display: flex;
+    gap: 10px;
+}
+
+#play-again {
+    background: #34a853;  /* Google green */
+    margin-top: 20px;     /* Space between checkbox and button */
+    display: none;        /* Hidden by default */
+}
+
+#play-again:hover {
+    background: #2d8e47;
+}
+
+@keyframes blueFlash {
+    0% {
+        background-color: rgba(66, 133, 244, 0);
+    }
+    50% {
+        background-color: rgba(66, 133, 244, 0.3);
+    }
+    100% {
+        background-color: rgba(66, 133, 244, 0);
+    }
+}
+
+.flash-blue {
+    animation: blueFlash 0.5s ease-out;
+}
+
+@media (max-width: 300px) {
+    #grid-header {
+        padding: 16px 12px;
+    }
+    
+    #grid-footer {
+        padding: 12px;
+    }
+    
+    #buttons {
+        gap: 6px;
+    }
 }
