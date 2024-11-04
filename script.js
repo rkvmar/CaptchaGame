@@ -12,7 +12,7 @@ const puzzles = [
         mode: 'random'
     },
     {
-        targetObject: 'Mines (3 of them)',
+        targetObject: 'Mines (3)',
         mode: 'static',
         validMap: [
             [1, 0, 0],
@@ -24,6 +24,14 @@ const puzzles = [
             ['./images/mines/empty.png', './images/mines/empty.png', './images/mines/1.png'],
             ['./images/mines/empty.png', './images/mines/2.png', './images/mines/1.png']
         ]
+    },
+    {
+        targetObject: 'Something in common (either group)',
+        validPath: './images/connections/valid/',
+        decoyPath: './images/connections/decoy/',
+        numValidImages: 5, 
+        numDecoyImages: 5,
+        mode: 'either'
     },
     {
         targetObject: 'Airbus aircraft',
@@ -116,7 +124,7 @@ function setupGrid() {
             });
         });
     } else {
-        // Random and repeat modes
+        // Random, repeat, and either modes
         let numCorrect;
         if (currentPuzzle.mode === 'repeat') {
             numCorrect = 4;
@@ -146,7 +154,7 @@ function setupGrid() {
             validImages = validImages.sort(() => Math.random() - 0.5);
             decoyImages = decoyImages.sort(() => Math.random() - 0.5);
         } else {
-            // Random mode: shuffle and take what we need
+            // Random and either modes: shuffle and take what we need
             validImages = [...baseValidImages]
                 .sort(() => Math.random() - 0.5)
                 .slice(0, numCorrect);
@@ -160,22 +168,41 @@ function setupGrid() {
         let positions = Array.from({ length: 9 }, (_, i) => i);
         positions = positions.sort(() => Math.random() - 0.5);
         
-        // Take first numCorrect positions for correct answers
-        const correctPositions = positions.slice(0, numCorrect);
-        correctPositions.forEach(pos => correctAnswers.add(pos));
-        
-        // Assign images to grid
-        const gridItems = document.querySelectorAll('.grid-item');
-        let validIndex = 0;
-        let decoyIndex = 0;
-        
-        gridItems.forEach((item, index) => {
-            if (correctAnswers.has(index)) {
-                item.style.backgroundImage = `url(${validImages[validIndex++]})`;
-            } else {
-                item.style.backgroundImage = `url(${decoyImages[decoyIndex++]})`;
-            }
-        });
+        // For 'either' mode, we'll store both valid and decoy positions
+        if (currentPuzzle.mode === 'either') {
+            const validPositions = positions.slice(0, numCorrect);
+            const decoyPositions = positions.slice(numCorrect);
+            correctAnswers = new Set([validPositions, decoyPositions]);
+            
+            // Assign images to grid
+            const gridItems = document.querySelectorAll('.grid-item');
+            gridItems.forEach((item, index) => {
+                if (validPositions.includes(index)) {
+                    const validImageIndex = validPositions.indexOf(index);
+                    item.style.backgroundImage = `url(${validImages[validImageIndex]})`;
+                } else {
+                    const decoyImageIndex = decoyPositions.indexOf(index);
+                    item.style.backgroundImage = `url(${decoyImages[decoyImageIndex]})`;
+                }
+            });
+        } else {
+            // Take first numCorrect positions for correct answers (random mode)
+            const correctPositions = positions.slice(0, numCorrect);
+            correctAnswers = new Set(correctPositions);
+            
+            // Assign images to grid
+            const gridItems = document.querySelectorAll('.grid-item');
+            let validIndex = 0;
+            let decoyIndex = 0;
+            
+            gridItems.forEach((item, index) => {
+                if (correctAnswers.has(index)) {
+                    item.style.backgroundImage = `url(${validImages[validIndex++]})`;
+                } else {
+                    item.style.backgroundImage = `url(${decoyImages[decoyIndex++]})`;
+                }
+            });
+        }
     }
 
     // Add event listeners to all grid items
@@ -236,8 +263,26 @@ function resetGame() {
 }
 
 function verify() {
-    const isCorrect = Array.from(selectedItems).every(item => correctAnswers.has(item)) 
-        && selectedItems.size === correctAnswers.size;
+    let isCorrect;
+    
+    if (currentPuzzle.mode === 'either') {
+        // Check if selected items match either all valid or all decoy positions
+        const [validPositions, decoyPositions] = correctAnswers;
+        const selectedArray = Array.from(selectedItems);
+        
+        isCorrect = (
+            // Check if matches all valid positions
+            (selectedArray.length === validPositions.length && 
+             selectedArray.every(item => validPositions.includes(item))) ||
+            // Check if matches all decoy positions
+            (selectedArray.length === decoyPositions.length && 
+             selectedArray.every(item => decoyPositions.includes(item)))
+        );
+    } else {
+        // Original verification for other modes
+        isCorrect = Array.from(selectedItems).every(item => correctAnswers.has(item)) 
+            && selectedItems.size === correctAnswers.size;
+    }
     
     if (isCorrect) {
         // Add blue flash animation
