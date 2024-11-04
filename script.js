@@ -128,33 +128,18 @@ function setupGrid() {
         let numCorrect;
         if (currentPuzzle.mode === 'repeat') {
             numCorrect = 4;
-        } else {
-            numCorrect = Math.min(4, currentPuzzle.numValidImages);
-        }
-        const numDecoyNeeded = 9 - numCorrect;
-        
-        // Get all available images first
-        const baseValidImages = getRandomUniqueImages(currentPuzzle.validPath, currentPuzzle.numValidImages, currentPuzzle.numValidImages);
-        const baseDecoyImages = getRandomUniqueImages(currentPuzzle.decoyPath, currentPuzzle.numDecoyImages, currentPuzzle.numDecoyImages);
-        
-        // Create arrays for the images we'll use
-        let validImages = [];
-        let decoyImages = [];
-        
-        if (currentPuzzle.mode === 'repeat') {
-            // Repeat mode: use the first image multiple times but randomize order
-            const validImage = baseValidImages[0];
-            const decoyImage = baseDecoyImages[0];
+        } else if (currentPuzzle.mode === 'either') {
+            numCorrect = Math.random() < 0.5 ? 4 : 5;
+            const numDecoyNeeded = 9 - numCorrect;
             
-            // Create arrays with duplicates
-            validImages = Array(numCorrect).fill(validImage);
-            decoyImages = Array(numDecoyNeeded).fill(decoyImage);
+            // Get valid and decoy images
+            const baseValidImages = getRandomUniqueImages(currentPuzzle.validPath, currentPuzzle.numValidImages, currentPuzzle.numValidImages);
+            const baseDecoyImages = getRandomUniqueImages(currentPuzzle.decoyPath, currentPuzzle.numDecoyImages, currentPuzzle.numDecoyImages);
             
-            // Shuffle both arrays
-            validImages = validImages.sort(() => Math.random() - 0.5);
-            decoyImages = decoyImages.sort(() => Math.random() - 0.5);
-        } else {
-            // Random and either modes: shuffle and take what we need
+            // Create arrays for the images we'll use
+            let validImages = [];
+            let decoyImages = [];
+            
             validImages = [...baseValidImages]
                 .sort(() => Math.random() - 0.5)
                 .slice(0, numCorrect);
@@ -162,14 +147,11 @@ function setupGrid() {
             decoyImages = [...baseDecoyImages]
                 .sort(() => Math.random() - 0.5)
                 .slice(0, numDecoyNeeded);
-        }
-        
-        // Randomize positions
-        let positions = Array.from({ length: 9 }, (_, i) => i);
-        positions = positions.sort(() => Math.random() - 0.5);
-        
-        // For 'either' mode, we'll store both valid and decoy positions
-        if (currentPuzzle.mode === 'either') {
+            
+            // Randomize positions
+            let positions = Array.from({ length: 9 }, (_, i) => i);
+            positions = positions.sort(() => Math.random() - 0.5);
+            
             const validPositions = positions.slice(0, numCorrect);
             const decoyPositions = positions.slice(numCorrect);
             correctAnswers = new Set([validPositions, decoyPositions]);
@@ -186,22 +168,79 @@ function setupGrid() {
                 }
             });
         } else {
-            // Take first numCorrect positions for correct answers (random mode)
-            const correctPositions = positions.slice(0, numCorrect);
-            correctAnswers = new Set(correctPositions);
+            numCorrect = Math.min(4, currentPuzzle.numValidImages);
+            const numDecoyNeeded = 9 - numCorrect;
             
-            // Assign images to grid
-            const gridItems = document.querySelectorAll('.grid-item');
-            let validIndex = 0;
-            let decoyIndex = 0;
+            // Get all available images first
+            const baseValidImages = getRandomUniqueImages(currentPuzzle.validPath, currentPuzzle.numValidImages, currentPuzzle.numValidImages);
+            const baseDecoyImages = getRandomUniqueImages(currentPuzzle.decoyPath, currentPuzzle.numDecoyImages, currentPuzzle.numDecoyImages);
             
-            gridItems.forEach((item, index) => {
-                if (correctAnswers.has(index)) {
-                    item.style.backgroundImage = `url(${validImages[validIndex++]})`;
-                } else {
-                    item.style.backgroundImage = `url(${decoyImages[decoyIndex++]})`;
-                }
-            });
+            // Create arrays for the images we'll use
+            let validImages = [];
+            let decoyImages = [];
+            
+            if (currentPuzzle.mode === 'repeat') {
+                // Repeat mode: use the first image multiple times but randomize order
+                const validImage = baseValidImages[0];
+                const decoyImage = baseDecoyImages[0];
+                
+                // Create arrays with duplicates
+                validImages = Array(numCorrect).fill(validImage);
+                decoyImages = Array(numDecoyNeeded).fill(decoyImage);
+                
+                // Shuffle both arrays
+                validImages = validImages.sort(() => Math.random() - 0.5);
+                decoyImages = decoyImages.sort(() => Math.random() - 0.5);
+            } else {
+                // Random and either modes: shuffle and take what we need
+                validImages = [...baseValidImages]
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, numCorrect);
+                
+                decoyImages = [...baseDecoyImages]
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, numDecoyNeeded);
+            }
+            
+            // Randomize positions
+            let positions = Array.from({ length: 9 }, (_, i) => i);
+            positions = positions.sort(() => Math.random() - 0.5);
+            
+            // For 'either' mode, we'll store both valid and decoy positions
+            if (currentPuzzle.mode === 'either') {
+                const validPositions = positions.slice(0, numCorrect);
+                const decoyPositions = positions.slice(numCorrect);
+                correctAnswers = new Set([validPositions, decoyPositions]);
+                
+                // Assign images to grid
+                const gridItems = document.querySelectorAll('.grid-item');
+                gridItems.forEach((item, index) => {
+                    if (validPositions.includes(index)) {
+                        const validImageIndex = validPositions.indexOf(index);
+                        item.style.backgroundImage = `url(${validImages[validImageIndex]})`;
+                    } else {
+                        const decoyImageIndex = decoyPositions.indexOf(index);
+                        item.style.backgroundImage = `url(${decoyImages[decoyImageIndex]})`;
+                    }
+                });
+            } else {
+                // Take first numCorrect positions for correct answers (random mode)
+                const correctPositions = positions.slice(0, numCorrect);
+                correctAnswers = new Set(correctPositions);
+                
+                // Assign images to grid
+                const gridItems = document.querySelectorAll('.grid-item');
+                let validIndex = 0;
+                let decoyIndex = 0;
+                
+                gridItems.forEach((item, index) => {
+                    if (correctAnswers.has(index)) {
+                        item.style.backgroundImage = `url(${validImages[validIndex++]})`;
+                    } else {
+                        item.style.backgroundImage = `url(${decoyImages[decoyIndex++]})`;
+                    }
+                });
+            }
         }
     }
 
