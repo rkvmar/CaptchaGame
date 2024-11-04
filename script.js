@@ -26,12 +26,20 @@ const puzzles = [
         ]
     },
     {
-        targetObject: 'Something in common (either group)',
+        targetObject: 'Something in common (there are 2 groups)',
         validPath: './images/connections/valid/',
         decoyPath: './images/connections/decoy/',
         numValidImages: 5, 
         numDecoyImages: 5,
         mode: 'either'
+    },
+    {
+        targetObject: 'Pride Flags',
+        validPath: './images/pride/valid/',
+        decoyPath: './images/pride/decoy/',
+        numValidImages: 5   , 
+        numDecoyImages: 5,
+        mode: 'random'
     },
     {
         targetObject: 'Airbus aircraft',
