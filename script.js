@@ -12,7 +12,7 @@ const puzzles = [
         mode: 'random'
     },
     {
-        targetObject: 'Mines',
+        targetObject: 'Mines (3 of them)',
         mode: 'static',
         validMap: [
             [1, 0, 0],
