@@ -128,6 +128,32 @@ function setupGrid() {
         let numCorrect;
         if (currentPuzzle.mode === 'repeat') {
             numCorrect = 4;
+            // Get base images for repeat mode
+            const validImage = getRandomImageFromFolder(currentPuzzle.validPath, currentPuzzle.numValidImages);
+            const decoyImage = getRandomImageFromFolder(currentPuzzle.decoyPath, currentPuzzle.numDecoyImages);
+            
+            // Create arrays with repeated images
+            const validImages = Array(numCorrect).fill(validImage);
+            const decoyImages = Array(9 - numCorrect).fill(decoyImage);
+            
+            // Randomize positions
+            let positions = Array.from({ length: 9 }, (_, i) => i);
+            positions = positions.sort(() => Math.random() - 0.5);
+            
+            // Take first numCorrect positions for correct answers
+            const correctPositions = positions.slice(0, numCorrect);
+            correctAnswers = new Set(correctPositions);
+            
+            // Assign images to grid
+            const gridItems = document.querySelectorAll('.grid-item');
+            gridItems.forEach((item, index) => {
+                if (correctAnswers.has(index)) {
+                    item.style.backgroundImage = `url(${validImage})`;
+                } else {
+                    item.style.backgroundImage = `url(${decoyImage})`;
+                }
+            });
+            return; // Exit early since we've handled the repeat mode
         } else if (currentPuzzle.mode === 'either') {
             numCorrect = Math.random() < 0.5 ? 4 : 5;
             const numDecoyNeeded = 9 - numCorrect;
