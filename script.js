@@ -25,14 +25,14 @@ const puzzles = [
             ['./images/mines/empty.png', './images/mines/2.png', './images/mines/1.png']
         ]
     },
-    {
-        targetObject: 'Something in common (there are 2 groups)',
-        validPath: './images/connections/valid/',
-        decoyPath: './images/connections/decoy/',
-        numValidImages: 5, 
-        numDecoyImages: 5,
-        mode: 'either'
-    },
+    // {
+    //     targetObject: 'Something in common (there are 2 groups)',
+    //     validPath: './images/connections/valid/',
+    //     decoyPath: './images/connections/decoy/',
+    //     numValidImages: 5, 
+    //     numDecoyImages: 5,
+    //     mode: 'either'
+    // },
     {
         targetObject: 'Pride Flags',
         validPath: './images/pride/valid/',
